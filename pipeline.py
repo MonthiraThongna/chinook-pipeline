@@ -19,7 +19,7 @@ outputPath = config.get('DEFAULT', 'OUTPUT_PATH')
 tracks = pd.read_csv(inputPath)
 
 # transform
-tracks['UnitPrice'] = tracks['UnitPrice'].apply(lambda x: math.ceil(x))
+tracks['UnitPrice'] = tracks['UnitPrice'].apply(lambda x: (math.ceil(x))+1)
 
 # load
 tracks.to_csv(outputPath, index=False)
