@@ -1,0 +1,32 @@
+name: CI for chinook pipeline
+on:
+  push:
+    branches: [dev]
+jobs:
+  push_to_databricks:
+    run-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+      - name: Databricks CLI install and config
+        run: |
+          pip install databricks-cli
+          cat ~/.databrickscfg << EOF
+          [DEFUALT]
+          host = ${{ secrets.DATABRICKS_HOST_URL }}
+          token = ${{ secrets.DATABRICKS_TOKEN }}
+          job-api-version = 2.1
+          EOF
+      - name: Deploy pipeline to databricks
+        run: |
+          databricks workspace import "pipeline.py" "/Workspace/Users/monthira.t@ppp.co.th/test/pipeline" --language python --overwrite
+      - name: Deploy test to databricks
+        run: |
+          databricks workspace import "test.py" "/Workspace/Users/monthira.t@ppp.co.th/test/test" --language python --overwrite
+      - name: run test job
+        run: |
+          databrick jobs run-now --job-id 331299547184238
